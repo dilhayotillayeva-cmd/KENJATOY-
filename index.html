@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KENJATOY AI</title>
+<style>
+:root{color-scheme:dark;--bg:#09080f;--panel:#14111f;--purple:#8b5cf6;--text:#f4f0ff;--muted:#aaa2bd}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#21133b 0,#0a0910 55%);color:var(--text);font:16px system-ui,Arial;min-height:100vh}
+.wrap{max-width:850px;margin:auto;padding:22px 15px 35px}.head{display:flex;align-items:center;gap:13px;margin-bottom:20px}.logo{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#a78bfa,#5b21b6);display:grid;place-items:center;font-weight:900;font-size:21px;box-shadow:0 8px 28px #7c3aed44}
+h1{font-size:23px;margin:0}.sub{font-size:13px;color:var(--muted)}.badge{margin-left:auto;border:1px solid #3d2a5d;border-radius:99px;padding:6px 10px;font-size:12px;color:#d7c5ff}
+.panel{background:#100e18df;border:1px solid #302541;border-radius:22px;padding:18px;box-shadow:0 18px 55px #0005}
+.tabs{display:flex;gap:9px;margin-bottom:16px}.tab{flex:1;border:1px solid #403251;background:#1a1624;color:#ddd4ef;padding:12px;border-radius:13px;font-weight:700}.tab.active{background:var(--purple);border-color:var(--purple);color:white}
+label{display:block;color:#c9bedb;font-size:13px;margin:4px 0 8px}textarea{width:100%;min-height:105px;resize:vertical;border:1px solid #403251;border-radius:14px;background:#0b0a10;color:white;padding:14px;font:inherit;outline:none}textarea:focus{border-color:#a78bfa}
+button.primary{width:100%;margin-top:12px;border:0;border-radius:13px;padding:13px;background:linear-gradient(90deg,#7c3aed,#9f67ff);color:white;font-size:15px;font-weight:800}
+#result{white-space:pre-wrap;line-height:1.6;margin-top:16px;color:#eee7fa;overflow-wrap:anywhere}#result img{max-width:100%;border-radius:14px;margin-top:12px}.hint{font-size:12px;color:var(--muted);margin-top:14px}.hidden{display:none}.foot{text-align:center;color:#7f758f;font-size:12px;margin-top:18px}
+</style>
+</head>
+<body><main class="wrap">
+<header class="head"><div class="logo">K</div><div><h1>KENJATOY AI</h1><div class="sub">Shaxsiy sun’iy intellekt yordamchingiz</div></div><span class="badge">ONLINE READY</span></header>
+<section class="panel">
+<div class="tabs"><button class="tab active" id="chatTab" onclick="setMode('chat')">🤖 AI bilan suhbat</button><button class="tab" id="imageTab" onclick="setMode('image')">🎨 Rasm yaratish</button></div>
+<label id="promptLabel" for="prompt">Savolingiz</label>
+<textarea id="prompt" placeholder="KENJATOY AI, menga yordam ber..."></textarea>
+<button class="primary" id="send" onclick="submitPrompt()">Yuborish ✨</button>
+<div id="result" aria-live="polite"></div>
+<div class="hint">Eslatma: ishlashi uchun serverda API kaliti sozlangan bo‘lishi kerak.</div>
+</section><div class="foot">KENJATOY AI · Black & Purple Edition</div>
+</main>
+<script>
+let mode='chat';
+function setMode(m){mode=m;document.getElementById('chatTab').classList.toggle('active',m==='chat');document.getElementById('imageTab').classList.toggle('active',m==='image');document.getElementById('promptLabel').textContent=m==='chat'?'Savolingiz':'Qanday rasm yaratamiz?';document.getElementById('prompt').placeholder=m==='chat'?'KENJATOY AI, menga yordam ber...':'Masalan: binafsha neonli futuristik shahar, anime uslubi';document.getElementById('send').textContent=m==='chat'?'Yuborish ✨':'Rasm yaratish 🎨';document.getElementById('result').innerHTML=''}
+async function submitPrompt(){const prompt=document.getElementById('prompt').value.trim(),result=document.getElementById('result'),btn=document.getElementById('send');if(!prompt){result.textContent='Avval matn yozing.';return}btn.disabled=true;btn.textContent='Kuting...';result.textContent=mode==='chat'?'KENJATOY AI javob tayyorlayapti...':'Rasm yaratilmoqda...';try{const r=await fetch(mode==='chat'?'/api/chat':'/api/image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(mode==='chat'?{message:prompt}:{prompt})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Xatolik yuz berdi');if(mode==='chat')result.textContent=d.reply||'Javob bo‘sh.';else{result.innerHTML='Mana, so‘ragan rasmingiz:<br>';const img=document.createElement('img');img.src=d.image_url;img.alt=prompt;result.appendChild(img)}}catch(e){result.textContent='Xatolik: '+e.message}finally{btn.disabled=false;btn.textContent=mode==='chat'?'Yuborish ✨':'Rasm yaratish 🎨'}}
+</script></body></html>
